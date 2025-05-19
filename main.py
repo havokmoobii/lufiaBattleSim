@@ -1,17 +1,72 @@
 import pygame
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
-from entity import Entity
 from player import Player
 from object import Object
+from game_map import Map
 
 def main():
+    
+    #pygame.mixer.init()
+    #pygame.mixer.music.load("music/07 cave")
+    #pygame.mixer.music.play()
+    # I guess sound it tricky with WSL
+    
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     dt = 0
 
-    maxim = Player(SCREEN_WIDTH/2 - 28, SCREEN_HEIGHT/2 + 12, 32, 32)
-    wall = Object(SCREEN_WIDTH/2 + 4, SCREEN_HEIGHT/2 + 12, 32, 32)
+    camera =pygame.Rect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT)
+
+    maxim = Player(224, 128, 32, 32)
+    walls = [
+        Object(32 * 8, 32 * 13, 32, 32),
+        Object(32 * 9, 32 * 13, 32, 32),
+        Object(32 * 10, 32 * 13, 32, 32),
+        Object(32 * 11, 32 * 13, 32, 32),
+        Object(32 * 12, 32 * 13, 32, 32),
+        Object(32 * 13, 32 * 12, 32, 32),
+        Object(32 * 14, 32 * 11, 32, 32),
+        Object(32 * 14, 32 * 10, 32, 32),
+        Object(32 * 14, 32 * 9, 32, 32),
+        Object(32 * 14, 32 * 8, 32, 32),
+        Object(32 * 14, 32 * 7, 32, 32),
+        Object(32 * 14, 32 * 6, 32, 32),
+        Object(32 * 14, 32 * 5, 32, 32),
+        Object(32 * 14, 32 * 4, 32, 32),
+        Object(32 * 13, 32 * 3, 32, 32),
+        Object(32 * 12, 32 * 2, 32, 32),
+        Object(32 * 11, 32 * 1, 32, 32),
+        Object(32 * 10, 32 * 1, 32, 32),
+        Object(32 * 9, 32 * 1, 32, 32),
+        Object(32 * 8, 32 * 1, 32, 32),
+        Object(32 * 7, 32 * 1, 32, 32),
+        Object(32 * 6, 32 * 1, 32, 32),
+        Object(32 * 5, 32 * 1, 32, 32),
+        Object(32 * 4, 32 * 1, 32, 32),
+        Object(32 * 3, 32 * 1, 32, 32),
+        Object(32 * 2, 32 * 2, 32, 32),
+        Object(32 * 1, 32 * 3, 32, 32),
+        Object(32 * 0, 32 * 11, 32, 32),
+        Object(32 * 0, 32 * 10, 32, 32),
+        Object(32 * 0, 32 * 9, 32, 32),
+        Object(32 * 0, 32 * 8, 32, 32),
+        Object(32 * 0, 32 * 7, 32, 32),
+        Object(32 * 0, 32 * 6, 32, 32),
+        Object(32 * 0, 32 * 5, 32, 32),
+        Object(32 * 0, 32 * 4, 32, 32),
+        Object(32 * 2, 32 * 13, 32, 32),
+        Object(32 * 3, 32 * 13, 32, 32),
+        Object(32 * 4, 32 * 13, 32, 32),
+        Object(32 * 5, 32 * 13, 32, 32),
+        Object(32 * 6, 32 * 13, 32, 32),
+        Object(32 * 1, 32 * 12, 32, 32),
+        ]
+    
+    exit = Object(32 * 7, 32 * 14, 32, 32)
+
+    game_map = Map()
+    game_map.load("02SecretSkillsCave")
 
     while True:
         # Close game when clicking the X button
@@ -22,20 +77,23 @@ def main():
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
             return
-            
-        full_map = pygame.image.load("maps/02SecretSkillsCave.png").convert_alpha()
-        room = pygame.Surface([253, 227], pygame.SRCALPHA)
-        room.blit(full_map, (0,0), (326,664,240,224))
-            
-        screen.fill("#080800")
-        screen.blit((pygame.transform.scale(room, (room.get_width() * 2, room.get_height() * 2))), (SCREEN_WIDTH/2 - room.get_width(), SCREEN_HEIGHT/2 - room.get_height()))
         
         maxim.update(dt)
-        if maxim.check_for_collisions(wall):
-            maxim.collide()
+        for wall in walls:
+            if maxim.check_for_collisions(wall):
+                maxim.collide()
 
-        wall.draw(screen)
-        maxim.draw(screen)        
+        if maxim.check_for_collisions(exit):
+            return
+
+        camera.center = (maxim.x + 16, maxim.y)
+        screen.fill("#080800")
+        game_map.draw_background(screen, camera, 0)
+        maxim.draw(screen, camera)  
+        game_map.draw_foreground(screen, camera, 0)
+
+        for wall in walls:
+            wall.draw(screen, camera)
 
         pygame.display.flip()
 
@@ -48,5 +106,5 @@ if __name__ == "__main__":
 
 
 
-# Next: Figure out camera, then align everything to 32x32 grid
-# Then make multiple walls that actually go where they should on the map
+# Next: Put a jelly into the room. Touching it also closes the game.
+# Then figure out how a jelly moves in the original game and replicate it.

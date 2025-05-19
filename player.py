@@ -12,7 +12,7 @@ class Player(Entity):
         self.move_frame = 0
         self.move_direction = Direction.DOWN
 
-    def draw(self, screen):
+    def draw(self, screen, camera):
         self.image = pygame.Surface([self.width/2, self.height/2 + 10], pygame.SRCALPHA)
 
         match(self.move_direction):
@@ -40,7 +40,7 @@ class Player(Entity):
         if self.move_direction == Direction.LEFT:
             self.image = pygame.transform.flip(self.image, True, False)
 
-        screen.blit((pygame.transform.scale(self.image, (32, 52))), (self.x, self.y - 20))
+        screen.blit((pygame.transform.scale(self.image, (32, 52))), (self.x - camera.x, self.y - camera.y - 20))
 
         #uncomment to show collision
         #pygame.draw.rect(screen, "blue", (self.x, self.y, self.width, self.height))
