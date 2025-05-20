@@ -1,11 +1,5 @@
 import pygame
-from enum import Enum
-
-class Direction(Enum):
-    UP = "up",
-    LEFT = "left",
-    DOWN = "down",
-    RIGHT = "right"
+from constants import Direction
 
 class Entity:
 
@@ -29,3 +23,14 @@ class Entity:
         if self.y >= other.y + other.height or self.y + self.height <= other.y:
             return False
         return True
+    
+    def collide(self):
+        match(self.move_direction):
+            case Direction.UP:
+                self.y += 4
+            case Direction.LEFT:
+                self.x += 4
+            case Direction.DOWN:
+                self.y -= 4
+            case Direction.RIGHT:
+                self.x -= 4
